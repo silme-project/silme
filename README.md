@@ -54,7 +54,7 @@ CKey().GetAddress(pubkey) # Get address of the given pubkey
 
 ```
 
-## Wallet, CWalletDB is located at dboperations
+## CWalletDB() is located at dboperations
 
 ``` python
 CWalletDB().WriteKey(key, pubkey) # Write a private key and their pubkey to wallet db
@@ -71,3 +71,47 @@ CWalletDB().FindAddrFromHash(tx_hash) # Return the privatekey of the tx_hash out
 CWalletDB().FindHash(amount) # Return a tx hash to use as input for a new transaction, tx hash must have the specified amount
 CWalletDB().GenerateTransaction(amount, recipten) # Generate a new transaction
 
+
+```
+
+## CBlockIndex() is located at dboperations
+
+``` python
+CBlockIndex() # Return info of the give blockhash or height
+CBlockIndex(@HashOrHeight).Version() # Return @HashOrHeight version
+CBlockIndex(@HashOrHeight).Prev() # Return @HashOrHeight previous block hash 
+CBlockIndex(@HashOrHeight).Merkle() # Return @HashOrHeight merkle root 
+CBlockIndex(@HashOrHeight).Time() # Return @HashOrHeight time 
+CBlockIndex(@HashOrHeight).Bits() # Return @HashOrHeight bits 
+CBlockIndex(@HashOrHeight).Nonce() # Return @HashOrHeight nonce 
+CBlockIndex(@HashOrHeight).Txs() # Return @HashOrHeight transactions 
+
+```
+
+## CTx() is located at dboperations
+
+``` python
+CTx() # Return info of the give transaction hash
+CTx(@tx_hash).Height() # Return the height of block of the give tx_hash
+CTx(@tx_hash).Version() # Return @tx_hash version 
+CTx(@tx_hash).Time() # Return @tx_hash time 
+CTx(@tx_hash).Prev() # Return txhash of the input hash 
+CTx(@tx_hash).Value() # Return @tx_hash value
+CTx(@tx_hash).InsScript() # Return @tx_hash input_script 
+CTx(@tx_hash).OutScript() # Return @tx_hash output_script 
+CTx(@tx_hash).isCoinbase() # Return True if tx is coinbase False if not 
+CTx(@tx_hash).GetRecipten() # Return @tx_hash recipten pubkey 
+CTx(@tx_hash).IsReadyToSpend() # Return True if is not coinbase, Return True or False if pass coinbase majurity
+CTx(@tx_hash).GetSender() # Return the sender pubkey 
+```
+
+## CBlockchain() is located at dboperations
+
+``` python
+CBlockchain() # Return info about blockchain
+CBlockchain().getBestHeight() # Return the best height in the blockchain
+CBlockchain().GetBestHash() # Return the best hash in the blockchain
+CBlockchain().haveHash(@hash) # Return True if the give hash already exists False if not
+CBlockchain().GetBalance(@pubkey) # Return the balance of the given pubkey 
+
+```
