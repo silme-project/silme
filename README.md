@@ -29,13 +29,13 @@ Silme supports rpc commands
 
 ## MINING
 
-Start Mining using the start button in mining section, when you will find a vailid block you will credit the coinbase transaction value, to stop mining click the stop button in mining section, alternative for testing purposes you can use ./miner -d 1 to enable miining with debug results should be 
+Start Mining using the start button in mining section in silme-qt, when you will find a vailid block you will credit the coinbase transaction value, to stop mining click the stop button in mining section, alternative for testing purposes you can use ./miner -d 1 to enable mining with debug results should be 
 ``` bash
 
 [*] Working on block: 2
 [*] Target: 110427836236357352041769395878404723568785424659630784333489133269811200
-[*] Difficulty: 0
-[*] Required hashes: 0
+[*] Difficulty: 0.000244137132537
+[*] Required hashes: 1048577.0
 [*] Prev hash: 000009cb25c348b85b01819c52402adea224580263fbe9b915be8502c5220f82
 ```
 
