@@ -1,0 +1,158 @@
+#!/usr/bin/python
+# Copyright (c) 2017 CVSC
+# Distributed under the MIT/X11 software license, see the accompanying
+# file COPYING or http://www.opensource.org/licenses/mit-license.php.
+
+from main import *
+from termcolor  import colored
+import optparse
+
+def Miner(debug, blocks):
+
+
+    logg("SilmeMiner Started\n")
+
+
+    while True:
+        # reserve a key to pay the coinbase 
+        privatekey = CKey().MakeNewKey()
+        publickey = CKey().GetPubKey(privatekey)
+        
+        # best hash  
+        pindexPrev = CBlockchain().GetBestHash()
+
+        # we work on x block
+        inWork = CBlockIndex(CBlockchain().GetBestHash()).Height() +1
+        # get bits 
+        nBits = GetNextWorkRequired()
+        # convert bits to target 
+        target = bits2target(nBits)
+        # get diff
+        diff = CalculateDiff()
+        # apprx required hashes to find a block
+        hashesr = HashesTowin()
+
+        
+        if debug:
+            print colored('[*]', 'green'),("Working on block: ") + str(inWork)
+            print colored('[*]', 'green'),("Target: ") + str(target)
+            print colored('[*]', 'green'),("Difficulty: ") + str(diff)
+            print colored('[*]', 'green'),("Required hashes: ") + str(hashesr)
+            print colored('[*]', 'green'),("Prev hash: ") + str(pindexPrev)
+
+        txNew = CTransaction()
+        txNew.add("version", 1)
+        txNew.add("prev_out", 0)
+        txNew.add("time", int(time.time()))
+        txNew.input_script("")
+        txNew.output_script(publickey)
+
+
+
+
+        pblock = CBlock()
+        pblock.Nullvtx()
+        pblock.vtx.append(txNew)
+
+        #Collect the latest transactions into the block
+
+
+        thisSize = 0 
+
+
+        if MemPool().GetSize() > 0:
+            for x in xrange(0, 1):
+                tx = MemPool().GetTx(x)
+                thisSize += sys.getsizeof(tx)
+                if thisSize < nMaxSize:
+                    txNew = CTransaction()
+                    txNew.add("version", tx[0])
+                    txNew.add("prev_out", tx[1])
+                    txNew.add("time", tx[2])
+                    txNew.add("value", tx[3])
+                    txNew.add("input_script", tx[5])
+                    txNew.add("output_script", tx[6])
+                    txNew.add("signature", tx[7])
+
+                    pblock.vtx.append(txNew)
+
+
+        
+        # a list with sellected txs hashes from mempool
+        included_hashes = []
+
+        for x in xrange(1, len(pblock.vtx)):
+            # hash the transactions, not the coinbase tx
+            thisHash = hashlib.sha256(hashlib.sha256(str(pblock.vtx[x])).hexdigest()).hexdigest()
+            included_hashes.append(thisHash)
+  
+
+        # coinbase fees 
+        got_a_fee = 0
+        # block nbits 
+        pblock.nBits = nBits
+        # blockk timestamp
+        pblock.nTime = int(time.time()) 
+        # collect fees + block reward into coinbade tx 
+        pblock.vtx[0]["value"] = GetBlockValue(inWork, got_a_fee)
+        # sign the transaction 
+        pblock.vtx[0]["signature"] = ecdsa_sign(str(pblock.vtx[0]),privatekey)
+
+        pblock.hashMerkleRoot = pblock.BuildMerkleTree()
+        
+        
+
+        tmp_block = tmp()
+
+   
+        tmp_block.nVersion = 1 
+        tmp_block.hashPrevBlock = pindexPrev
+        tmp_block.hashMerkleRoot = pblock.BuildMerkleTree()
+        tmp_block.nTime = pblock.nTime
+        tmp_block.nBits = pblock.nBits
+        tmp_block.nNonce = 0 
+
+                
+               
+        blk = tmp_block.build().encode("hex_codec")
+
+        if debug:
+            print("\n\nRunning SilmeMiner with %d transactions in block\n" %(len(pblock.vtx)))
+
+        logg("Running SilmeMiner with %d transactions in block" %len(pblock.vtx))
+
+
+        hash, nonce, data_block = generate_hash(blk, target)
+
+
+        logg("SilmeMiner:\n")
+                
+        logg("proof-of-work found  \nhash: %s  \ntarget: %s\n" %(hash.encode('hex_codec'), target))
+
+        # save key 
+        if not AddKey(privatekey):
+            return False 
+
+
+        # Process this block the same as if we had received it from another node
+
+        if Proccess().thisBlock(data_block, pblock, nonce):
+            logg("Block accepted\n")
+            if CBlockchain().WriteBlock(pblock, data_block, nonce):
+                logg("Block successfull added to database")
+                for txhash in included_hashes:
+                    MemPool().RemoveTx(txhash)
+        else:
+            logg("Block failed")
+
+
+if __name__ == '__main__':
+    parser = optparse.OptionParser()
+
+    parser.add_option("-d", "--debug", dest="debug", default=False, type="string", help="Show mining info")
+
+    parser.add_option("-b", "--blocks", dest="blocks", default=100000000, type="string", help="Number of blocks to mine")
+    
+    (options, args) = parser.parse_args()
+
+    Miner(options.debug, options.blocks)

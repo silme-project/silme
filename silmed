@@ -1,0 +1,139 @@
+#! /bin/bash
+
+silme_config=$HOME"/.silme/silme.conf"
+if [ ! -f $silme_config ]; then
+    echo "$silme_config does not exist"
+    echo "please run 'configure'"
+    exit 1
+fi
+
+
+
+function read_config()
+{
+    text=$1
+    echo `grep -e ^$text $silme_config |awk -F\= '{print $2}' | tail -n 1| tr -d ' '`
+}
+
+# read path from config
+username=$(read_config "username")
+# read username
+password=$(read_config "password")
+
+
+logfile=$HOME"/.silme/rpc.log"
+	if ! [ -f $logfile ]; then
+	    touch $logfile
+	    chown $user:$user $logfile
+	fi
+
+
+
+
+# get PID of server
+if [ `id -u` = 0 ] ; then
+    if ! PID=`su $user -c "python rpc/rpc_server.py getpid"`; then
+	PID=""
+    fi
+else
+    if ! PID=`python rpc/rpc_server.py getpid`; then
+	PID=""
+    fi
+fi;
+
+case "$1" in
+    start)
+	if [ "$PID" ]; then
+	    echo "Server already running (pid $PID)"
+	    exit
+	fi
+
+	
+
+
+	echo "Starting server as daemon"
+	cmd="nohup python rpc/rpc_server.py > /dev/null 2>>$logfile &"
+	if [ `id -u` = 0 ] ; then
+            su $user -c "$cmd"
+	else
+	    eval $cmd
+	fi
+	;;
+    stop)
+	if [ ! $PID ]; then
+		echo $pid
+	    echo "Server not running"
+	    exit
+	fi
+        cmd="python rpc/rpc_server.py stop"
+	if [ `id -u` = 0 ] ; then
+            su $user -c "$cmd"
+	else
+	    $cmd
+	fi
+	echo "Waiting until process $PID terminates..."
+	while ps -p $PID > /dev/null; do sleep 1; done
+	echo "Done."
+	;;
+    status)
+	if [ ! "$PID" ]; then
+	    echo "Server not running"
+	else
+	    echo "Server running (pid $PID)"
+	fi
+	;;
+    help)
+    if [ ! "$PID" ]; then
+	    echo "Server not running, Please start the server and try again"
+	    exit
+	fi
+    echo 
+    echo "--------------   Blockchain --------------"
+    echo 
+	echo "getbestheight - Reurn the best height in the longest chain"
+	echo "getbesthash - Reurn the best hash in the longest chain"
+	echo "getdifficulty - Reurn the current difficulty"
+	echo "nethashrate - Reurn the current networkhashrate in ghs"
+	echo "getinfo - Reurn info about wallet && Blockchain"
+    echo 
+    echo "--------------  Wallet --------------"
+    echo 
+    echo "getbalance - Return wallet balance"
+    echo "getnewaddress - Reurn a new bitcoin address"
+    echo "getmyaddresses - Return a list of addresses"
+    echo
+    echo "--------------  Mining --------------"
+    echo "mempoolcount - Return mempool transactions count"
+    echo "gettarget - Return the pow target"
+    echo "-------------------------------------"
+    echo "version - Return silme version"
+
+
+
+
+
+
+	;;
+    getbesthash|getbestheight|getdifficulty|getnewaddress|getmyaddresses|getbalance|nethashrate|mempoolcount|version|getinfo|gettarget)
+	if [ ! "$PID" ]; then
+	    echo "Server not running"
+	    exit
+	fi
+        cmd="python rpc/rpc_server.py $1"
+	if [ `id -u` = 0 ] ; then
+            su $user -c "$cmd"
+	else
+	    $cmd
+	fi
+	;;
+    restart)
+	$0 stop
+	$0 start
+	;;
+    *)
+	echo "Usage: ./silmed {start|stop|status|help}"
+	exit 1
+	;;
+esac
+
+exit 0
