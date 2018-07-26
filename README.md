@@ -21,10 +21,34 @@ cd silme
 # RPC
 
 Silme supports rpc commands
+To use rpc. you need to run ./configure in order to set username and password
 ``` bash
 ./silmed start - Start rpc server
 ./silmed stop - Stop rpc server
+
 ./silmed help - Get a list of the available commands
+
+--------------   Blockchain --------------
+
+getbestheight - Reurn the best height in the longest chain
+getbesthash - Reurn the best hash in the longest chain
+getdifficulty - Reurn the current difficulty
+nethashrate - Reurn the current networkhashrate in ghs
+getinfo - Reurn info about wallet && Blockchain
+
+--------------  Wallet --------------
+
+getbalance - Return wallet balance
+getnewaddress - Reurn a new bitcoin address
+getmyaddresses - Return a list of addresses
+
+--------------  Mining --------------
+mempoolcount - Return mempool transactions count
+gettarget - Return the pow target
+-------------------------------------
+version - Return silme version
+
+
 ```
 
 ## MINING
