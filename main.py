@@ -269,6 +269,16 @@ class Proccess(object):
             logg("Proccess::thisTxIsVaild() : prevout is null")
             return False
 
+        # check if have coins to spend
+
+        # get the sender pubkey of the input hash 
+        thisPrev = CTx(tx["prev_out"]).GetRecipten()
+
+        if CBlockchain().GetBalance(thisPrev) < tx["value"]:
+            logg("Proccess::thisTxIsVaild() : %s not enough coins to spend" %hashlib.sha256(hashlib.sha256(str(tx)).digest()).digest().encode("hex_codec"))
+            return False  
+
+
         return True
 
 
