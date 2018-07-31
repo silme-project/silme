@@ -195,3 +195,26 @@ class NCFactory(Factory):
 def gotProtocol(p):
     # ClientFactory instead?
     p.send_HELLO()
+    
+def Start(factory):
+    DEFAULT_PORT = 5005
+    try:
+        endpoint = TCP4ServerEndpoint(reactor, 5656, interface="127.0.0.1")
+        _print(" [ ] LISTEN:", "127.0.0.1", ":", 5656)
+        endpoint.listen(factory)
+    except CannotListenError:
+        _print("[!] Address in use")
+        raise SystemExit
+
+
+    # connect to bootstrap addresses
+    _print(" [ ] Trying to connect to bootstrap hosts:")
+    for bootstrap in BOOTSTRAP_NODES + [a+":"+str(DEFAULT_PORT) for a in []]:
+
+        _print("     [*] ", bootstrap)
+        host, port = bootstrap.split(":")
+        point = TCP4ClientEndpoint(reactor, host, int(port))
+        d = connectProtocol(point, NCProtocol(factory, "SENDHELLO", "LISTENER"))
+        d.addCallback(gotProtocol)
+    
+    reactor.run(installSignalHandlers=0)
