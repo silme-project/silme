@@ -178,12 +178,11 @@ class NCProtocol(Protocol):
 # Splitinto NCRecvFactory and NCSendFactory (also reconsider the names...:/)
 class NCFactory(Factory):
     def __init__(self):
-        pass
-
-    def startFactory(self):
         self.peers = {}
         self.numProtocols = 0
         self.nodeid = cryptotools.generate_nodeid()[:10]
+
+    def startFactory(self):
         _print(" [ ] NODEID:", self.nodeid)
 
     def stopFactory(self):
