@@ -10,6 +10,9 @@ import tkMessageBox
 from subprocess import check_output
 from utils import *
 from main import *
+from networking.network import *
+import networking.network 
+import threading
 
 
 
@@ -27,6 +30,12 @@ class silme:
         self.connection_ = StringVar()
         self.startorstopmining_ = StringVar()
         self.binfo_ = StringVar()
+        
+        # hacky
+        self.factory = NCFactory()
+
+        # start networking 
+        thread.start_new_thread(networking.network.Start, ((self.factory,)))
         
 
 
