@@ -5,7 +5,7 @@
 
 from Tkinter import *
 import thread
-import time
+import time as ttime
 import tkMessageBox
 from subprocess import check_output
 from utils import *
@@ -72,7 +72,7 @@ class silme:
                 self.balance_.set(CWalletDB().GetBalance())
 
                 self.binfo_.set(self.blockchaininfo())
-                time.sleep(3)
+                ttime.sleep(3)
 
 
     def sosm(self):
