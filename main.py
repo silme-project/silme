@@ -506,3 +506,44 @@ def generate_hash(data_block, targetx):
         else:
             nonce      +=1
             data_block = data_block[0:len(data_block) - 4] + struct.pack('<I', nonce)  
+  
+
+
+class CaBlock(object):
+    def __init__(self, thisHeight):
+        self.raw_block = CBlockIndex(thisHeight).Raw()
+        self.nonce = CBlockIndex(thisHeight).Nonce()
+        self.txs = CBlockIndex(thisHeight).Txs()
+        self.readytxs = []
+        self.pblock_ = None 
+        self.cltxs()
+
+
+
+    def pblock(self):
+        pblock = CBlock()
+        for tx in self.readytxs:
+            pblock.vtx.append(tx)
+        pblock.hashMerkleRoot = pblock.BuildMerkleTree()
+        self.pblock_ = pblock
+        
+    
+
+    def cltxs(self):
+        for tx in self.txs:
+            if tx[2] == 0:
+                txhash = tx[5]
+                # coinbase transaction
+                txNew = CTransaction()
+                txNew.add("version", CTx(txhash).Version())
+                txNew.add("prev_out", CTx(txhash).Prev())
+                txNew.add("time", CTx(txhash).Time())
+                txNew.input_script("")
+                txNew.output_script(CTx(txhash).GetRecipten())
+                txNew.add("value", CTx(txhash).Value())
+                txNew.add("signature", CTx(txhash).GetSignature())
+                self.readytxs.append(txNew)
+        self.pblock()
+
+    def dump(self):
+        return self.raw_block, self.pblock_, self.nonce
