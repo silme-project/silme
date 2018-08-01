@@ -55,6 +55,8 @@ class NCProtocol(Protocol):
         self.mybestheight = CBlockchain().getBestHeight()
         self.mybesthash = CBlockchain().GetBestHash()
 
+        self.factory.status = "Running"
+
     def connectionMade(self):
         r_ip = self.transport.getPeer()
         h_ip = self.transport.getHost()
@@ -110,7 +112,7 @@ class NCProtocol(Protocol):
                     self.handle_SENDBLOCKS(line)
 
     def send_PING(self):
-        _print(" [>] PING   to", self.remote_nodeid, "at", self.remote_ip)
+        logg(" [>] PING   to %s %s" %(self.remote_nodeid, self.remote_ip))
         ping = messages.create_ping(self.nodeid)
         self.write(ping)
 
@@ -124,14 +126,14 @@ class NCProtocol(Protocol):
 
 
     def send_SYNC(self):
-        _print(" [>] Asking " + self.remote_nodeid + " if we need sync")
+        logg("[>] Asking %s if we need sync" %self.remote_nodeid)
         sync = messages.create_sync(self.nodeid, self.mybestheight, self.mybesthash)
         self.write(sync)
 
 
 
     def handle_SYNC(self, line):
-        _print(" [>] Got reply abou sync message from " + self.remote_nodeid)
+        logg("[>] Got reply about sync message from %s" %self.remote_nodeid)
         data = messages.read_message(line)
 
         if data["bestheight"] > self.mybestheight:
@@ -142,12 +144,12 @@ class NCProtocol(Protocol):
             self.write(syncme)
 
         elif data["bestheight"] == self.mybestheight:
-            print "We are synced"
+            logg("we are synced")
 
 
 
     def handle_SENDBLOCKS(self, line):
-        _print(" [>] Got sendblocks message from " + self.remote_nodeid)
+        logg("[>] Got sendblocks message from %s" %self.remote_nodeid)
         data = messages.read_message(line)
         try:
             thisHeight = CBlockIndex(data["besthash"]).Height()
@@ -161,7 +163,7 @@ class NCProtocol(Protocol):
 
 
     def send_ADDR(self):
-        _print(" [>] Telling " + self.remote_nodeid + " about my peers")
+        logg(" [>] Telling to %s about my peers" %self.remote_nodeid)
         # Shouldn't this be a list and not a dict?
         peers = self.factory.peers
         listeners = [(n, peers[n][0], peers[n][1], peers[n][2])
@@ -174,18 +176,19 @@ class NCProtocol(Protocol):
     def handle_ADDR(self, addr):
         try:
             nodes = messages.read_message(addr)['nodes']
-            _print(" [<] Recieved addr list from peer " + self.remote_nodeid)
+            logg(" [<] Recieved addr list from peer %s" %self.remote_nodeid)
             #for node in filter(lambda n: nodes[n][1] == "SEND", nodes):
             for node in nodes:
-                _print("     [*] "  + node[0] + " " + node[1])
+                logg(" [*] %s %s" %(node[0], node[1]))
+
                 if node[0] == self.nodeid:
-                    _print(" [!] Not connecting to " + node[0] + ": thats me!")
+                    logg("[!] Not connecting to %s thats me!" %node[0])
                     return
                 if node[1] != "SPEAKER":
-                    _print(" [ ] Not connecting to " + node[0] + ": is " + node[1])
+                    logg("[!] Not connecting to %s is %s" %(node[0], node[1]))
                     return
                 if node[0] in self.factory.peers:
-                    _print(" [ ] Not connecting to " + node[0]  + ": already connected")
+                    logg("[!] Not connecting to %s already connected" %node[0])
                     return
                 _print(" [ ] Trying to connect to peer " + node[0] + " " + node[1])
                 # TODO: Use [2] and a time limit to not connect to "old" peers
@@ -202,7 +205,7 @@ class NCProtocol(Protocol):
 
     def handle_PONG(self, pong):
         pong = messages.read_message(pong)
-        _print(" [<] PONG from", self.remote_nodeid, "at", self.remote_ip)
+        logg("[<] PONG from %s at %s" %(self.remote_nodeid, self.remote_ip))
         # hacky
         addr, kind = self.factory.peers[self.remote_nodeid][:2]
         self.factory.peers[self.remote_nodeid] = (addr, kind, time())
@@ -222,7 +225,7 @@ class NCProtocol(Protocol):
             hello = messages.read_message(hello)
             self.remote_nodeid = hello['nodeid']
             if self.remote_nodeid == self.nodeid:
-                _print(" [!] Found myself at", self.host_ip)
+                logg("[!] Found myself at %s" %self.host_ip)
                 self.transport.loseConnection()
             else:
                 if self.state == "GETHELLO":
@@ -234,13 +237,13 @@ class NCProtocol(Protocol):
                 #self.write(messages.create_ping(self.nodeid))
                 if self.kind == "LISTENER":
                     # The listener pings it's audience
-                    _print(" [ ] Starting pinger to " + self.remote_nodeid)
+                    logg("[ ] Starting pinger to %s" %self.remote_ip)
                     self.lc_ping.start(PING_INTERVAL, now=False)
                     # Tell new audience about my peers
                     self.send_ADDR()
                 self.lc_sync.start(SYNC_INTERVAL, now=True)
         except messages.InvalidSignatureError:
-            _print(" [!] ERROR: Invalid hello sign ", self.remoteip)
+            _print(" [!] ERROR: Invalid hello sign ", self.remote_ip)
             self.transport.loseConnection()
 
 
@@ -248,6 +251,7 @@ class NCProtocol(Protocol):
     def add_peer(self):
         entry = (self.remote_ip, self.kind, time())
         self.factory.peers[self.remote_nodeid] = entry
+        logg("[] peer %s at %s added to pers list" %(self.remote_nodeid, self.remote_ip))
 
 
 
@@ -257,6 +261,7 @@ class NCFactory(Factory):
         self.peers = {}
         self.numProtocols = 0
         self.nodeid = cryptotools.generate_nodeid()[:10]
+        self.status = None
 
     def startFactory(self):
         _print(" [ ] NODEID:", self.nodeid)
