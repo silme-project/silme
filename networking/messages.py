@@ -60,6 +60,10 @@ def create_sync(nodeid, bestheight, besthash):
     msg = {'bestheight': bestheight, 'besthash':besthash}
     return make_envelope("sync", msg, nodeid)
 
+def create_ask_blocks(nodeid, besthash):
+    msg = {'besthash': besthash}
+    return make_envelope("givemeblocks", msg, nodeid)
+
 
 def create_getaddr(nodeid):
     msg = {}
