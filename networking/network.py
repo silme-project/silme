@@ -22,6 +22,7 @@ sys.path.insert(0,parentdir)
 
 from dboperations import *
 from bootstrap_nodes import *
+import version 
 from time import time
 
 
@@ -40,13 +41,17 @@ class NCProtocol(Protocol):
         self.factory = factory
         self.state = state
         self.VERSION = 0
+        self.ProtocolVersion = version._protocol_version
         self.remote_nodeid = None
         self.kind = kind
         self.nodeid = self.factory.nodeid
+
+
         self.lc_ping = LoopingCall(self.send_PING)
         self.lc_sync = LoopingCall(self.send_SYNC)
         self.message = partial(messages.envelope_decorator, self.nodeid)
-
+        
+        # local blockchain 
         self.mybestheight = CBlockchain().getBestHeight()
         self.mybesthash = CBlockchain().GetBestHash()
 
@@ -109,16 +114,20 @@ class NCProtocol(Protocol):
         ping = messages.create_ping(self.nodeid)
         self.write(ping)
 
+
+
     def handle_PING(self, ping):
         if messages.read_message(ping):
             pong = messages.create_pong(self.nodeid)
             self.write(pong)
 
 
+
     def send_SYNC(self):
         _print(" [>] Asking " + self.remote_nodeid + " if we need sync")
         sync = messages.create_sync(self.nodeid, self.mybestheight, self.mybesthash)
         self.write(sync)
+
 
 
     def handle_SYNC(self, line):
@@ -134,6 +143,7 @@ class NCProtocol(Protocol):
 
         elif data["bestheight"] == self.mybestheight:
             print "We are synced"
+
 
 
     def handle_SENDBLOCKS(self, line):
@@ -158,6 +168,8 @@ class NCProtocol(Protocol):
                      for n in peers]
         addr = messages.create_addr(self.nodeid, listeners)
         self.write(addr)
+
+
 
     def handle_ADDR(self, addr):
         try:
@@ -186,6 +198,8 @@ class NCProtocol(Protocol):
             _print(" [!] ERROR: Invalid addr sign ", self.remote_ip)
             self.transport.loseConnection()
 
+
+
     def handle_PONG(self, pong):
         pong = messages.read_message(pong)
         _print(" [<] PONG from", self.remote_nodeid, "at", self.remote_ip)
@@ -193,11 +207,15 @@ class NCProtocol(Protocol):
         addr, kind = self.factory.peers[self.remote_nodeid][:2]
         self.factory.peers[self.remote_nodeid] = (addr, kind, time())
 
+
+
     def send_HELLO(self):
         hello = messages.create_hello(self.nodeid, self.VERSION)
         #_print(" [ ] SEND_HELLO:", self.nodeid, "to", self.remote_ip)
         self.transport.write(hello + "\n")
         self.state = "SENTHELLO"
+
+
 
     def handle_HELLO(self, hello):
         try:
@@ -225,9 +243,13 @@ class NCProtocol(Protocol):
             _print(" [!] ERROR: Invalid hello sign ", self.remoteip)
             self.transport.loseConnection()
 
+
+
     def add_peer(self):
         entry = (self.remote_ip, self.kind, time())
         self.factory.peers[self.remote_nodeid] = entry
+
+
 
 # Splitinto NCRecvFactory and NCSendFactory (also reconsider the names...:/)
 class NCFactory(Factory):
@@ -248,6 +270,7 @@ class NCFactory(Factory):
 def gotProtocol(p):
     # ClientFactory instead?
     p.send_HELLO()
+    
     
 def Start(factory):
     DEFAULT_PORT = 5005
