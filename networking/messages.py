@@ -46,6 +46,7 @@ def create_hello(nodeid, version):
     msg = {'version': version}
     return make_envelope("hello", msg, nodeid)
 
+
 def create_ping(nodeid):
     msg = {}
     return make_envelope("ping", msg, nodeid)
@@ -53,6 +54,12 @@ def create_ping(nodeid):
 def create_pong(nodeid):
     msg = {}
     return make_envelope("pong", msg, nodeid)
+
+
+def create_sync(nodeid, bestheight, besthash):
+    msg = {'bestheight': bestheight, 'besthash':besthash}
+    return make_envelope("sync", msg, nodeid)
+
 
 def create_getaddr(nodeid):
     msg = {}

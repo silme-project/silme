@@ -3,9 +3,7 @@
 # Modified by CVSC
 
 from datetime import datetime
-from time import time
 from functools import partial
-
 from twisted.internet import reactor
 from twisted.internet.protocol import Protocol, Factory
 from twisted.internet.endpoints import TCP4ClientEndpoint
@@ -13,14 +11,23 @@ from twisted.internet.endpoints import connectProtocol
 from twisted.internet.task import LoopingCall
 from twisted.internet.error import CannotListenError
 from twisted.internet.endpoints import TCP4ServerEndpoint, TCP4ClientEndpoint
-
-
-
 import messages
 import cryptotools
+import os, inspect, sys
+
+
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0,parentdir)
+
+from dboperations import *
+from time import time
+
+
 
 PING_INTERVAL = 1200.0 # 20 min = 1200.0
-BOOTSTRAP_NODES = ["localhost:5008",
+SYNC_INTERVAL = 15 # 15 seconds
+BOOTSTRAP_NODES = ["localhost:1992",
                   "localhost:5007",
                   "localhost:5006",
                   "localhost:5005"]
@@ -39,7 +46,11 @@ class NCProtocol(Protocol):
         self.kind = kind
         self.nodeid = self.factory.nodeid
         self.lc_ping = LoopingCall(self.send_PING)
+        self.lc_sync = LoopingCall(self.send_SYNC)
         self.message = partial(messages.envelope_decorator, self.nodeid)
+
+        self.mybestheight = CBlockchain().getBestHeight()
+        self.mybesthash = CBlockchain().GetBestHash()
 
     def connectionMade(self):
         r_ip = self.transport.getPeer()
@@ -90,6 +101,8 @@ class NCProtocol(Protocol):
                     self.handle_PONG(line)
                 elif envelope['msgtype'] == 'addr':
                     self.handle_ADDR(line)
+                elif envelope['msgtype'] == 'sync':
+                    self.handle_SYNC(line)
 
     def send_PING(self):
         _print(" [>] PING   to", self.remote_nodeid, "at", self.remote_ip)
@@ -100,6 +113,19 @@ class NCProtocol(Protocol):
         if messages.read_message(ping):
             pong = messages.create_pong(self.nodeid)
             self.write(pong)
+
+
+    def send_SYNC(self):
+        _print(" [>] Asking " + self.remote_nodeid + " if we need sync")
+        sync = messages.create_sync(self.nodeid, self.mybestheight, self.mybesthash)
+        self.write(sync)
+
+
+    def handle_SYNC(self, line):
+        _print(" [>] Got reply abou sync message from " + self.remote_nodeid)
+        print line
+
+
 
     def send_ADDR(self):
         _print(" [>] Telling " + self.remote_nodeid + " about my peers")
@@ -171,6 +197,7 @@ class NCProtocol(Protocol):
                     self.lc_ping.start(PING_INTERVAL, now=False)
                     # Tell new audience about my peers
                     self.send_ADDR()
+                self.lc_sync.start(SYNC_INTERVAL, now=True)
         except messages.InvalidSignatureError:
             _print(" [!] ERROR: Invalid hello sign ", self.remoteip)
             self.transport.loseConnection()
