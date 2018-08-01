@@ -31,7 +31,9 @@ class Templates:
                    "gettxsbyheight": "SELECT * FROM transactions where block = ?",
                    "getheightbyhash": "SELECT height FROM blocks WHERE hash = ?",
                    "getrawbyhash": "SELECT raw FROM blocks WHERE hash = ?",
-                   "gettxsbyhash": "SELECT * FROM transactions where block = ?"}
+                   "gettxsbyhash": "SELECT * FROM transactions where block = ?",
+                   "getnoncebyhash": "SELECT nonce FROM blocks WHERE hash = ?",
+                   "getnoncebyheight": "SELECT nonce FROM blocks WHERE height = ?"}
 
     wallet = {"keys": "CREATE TABLE  IF NOT EXISTS  keys (private, pubkey)", 
               "txs": "CREATE TABLE IF NOT EXISTS transactions (tx_hash)",
