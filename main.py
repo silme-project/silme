@@ -62,17 +62,18 @@ class CKey(object):
 
 
 class CBlock(object):
+    
+    def __init__(self):
+        # block header
+        self.nVersion = None       # version 
+        self.hashPrevBlock = None  # previous block hash 
+        self.hashMerkleRoot = None # merkle 
+        self.nTime = None          # time 
+        self.nBits = None          # bits 
+        self.nNonce = None         # nonce
 
-    # block header
-    nVersion = None       # version 
-    hashPrevBlock = None  # previous block hash 
-    hashMerkleRoot = None # merkle 
-    nTime = None          # time 
-    nBits = None          # bits 
-    nNonce = None         # nonce
-
-    vtx = []
-    vMerkleTree = []
+        self.vtx = []
+        self.vMerkleTree = []
 
 
     def CBlock(self):
