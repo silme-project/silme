@@ -23,7 +23,10 @@ sys.path.insert(0,parentdir)
 from dboperations import *
 from bootstrap_nodes import *
 import version 
+from main import *
 from time import time
+import pickle
+
 
 
 
@@ -110,6 +113,8 @@ class NCProtocol(Protocol):
                     self.handle_SYNC(line)
                 elif envelope['msgtype'] == 'givemeblocks':
                     self.handle_SENDBLOCKS(line)
+                elif envelope['msgtype'] == 'getblock':
+                    self.handleRECEIVEDBLOCK(line)
 
     def send_PING(self):
         logg(" [>] PING   to %s %s" %(self.remote_nodeid, self.remote_ip))
@@ -161,6 +166,16 @@ class NCProtocol(Protocol):
             # be sure that we are not behind, and peer has genesis block 
             if thisHeight < self.mybestheight and thisHeight >=1:
                 print "Start sending blocks here"
+                
+
+
+
+    def handleRECEIVEDBLOCK(self, line):
+        pass
+
+
+
+
 
 
 

@@ -65,6 +65,12 @@ def create_ask_blocks(nodeid, besthash):
     return make_envelope("givemeblocks", msg, nodeid)
 
 
+def create_send_block(nodeid, raw, pblock, nonce):
+    msg = {'raw': raw, 'pblock': pblock, 'bnonce': nonce}
+    return make_envelope("getblock", msg, nodeid)
+
+
+
 def create_getaddr(nodeid):
     msg = {}
     return make_envelope("getaddr", msg, nodeid)

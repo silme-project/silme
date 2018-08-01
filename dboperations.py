@@ -348,6 +348,11 @@ class CTx(CDB):
         # Return the recipten of tx 
         return self.OutScript().encode("hex_codec")[2:132]
 
+    def GetSignature(self):
+        # Return the signature of the given tx 
+        return self.Read(self.templates.transactions["signature"], [self.txhash]).fetchone()[0]
+
+
     def WeSpend(self):
         if self.Prev() == 0:
             return False
@@ -423,7 +428,7 @@ class CBlockIndex(CDB):
     
     def Nonce(self):
         # Return block nonce 
-        return decode_uint32(a2b_hex(self.raw[152:160]))
+        return self.nonce
     
     def Txs(self):
         # Return block transactions 

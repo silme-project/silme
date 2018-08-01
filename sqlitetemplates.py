@@ -24,7 +24,8 @@ class Templates:
                     "prev": "SELECT prev FROM transactions WHERE hash = ?",
                     "value": "SELECT value FROM transactions WHERE hash = ?",
                     "input_script": "SELECT input_script FROM transactions WHERE hash = ?",
-                    "output_script": "SELECT output_script FROM transactions WHERE hash = ?"}
+                    "output_script": "SELECT output_script FROM transactions WHERE hash = ?",
+                    "signature": "SELECT signature FROM transactions WHERE hash = ?"}
 
     cblockindex = {"getrawbyheight": "SELECT raw FROM blocks WHERE height = ?",
                    "gethashbyheight": "SELECT hash FROM blocks WHERE height = ?",
