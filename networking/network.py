@@ -141,10 +141,14 @@ class NCProtocol(Protocol):
     def handle_SENDBLOCKS(self, line):
         _print(" [>] Got sendblocks message from " + self.remote_nodeid)
         data = messages.read_message(line)
-        thisHeight = CBlockIndex(data["besthash"]).Height()
-        # be sure that we are not behind, and peer has genesis block 
-        if thisHeight < self.mybestheight and thisHeight >=1:
-            print "Start sending blocks here"
+        try:
+            thisHeight = CBlockIndex(data["besthash"]).Height()
+        except Exception as e:
+            self.transport.loseConnection()
+        else:
+            # be sure that we are not behind, and peer has genesis block 
+            if thisHeight < self.mybestheight and thisHeight >=1:
+                print "Start sending blocks here"
 
 
 
