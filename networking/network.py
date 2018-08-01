@@ -165,14 +165,31 @@ class NCProtocol(Protocol):
         else:
             # be sure that we are not behind, and peer has genesis block 
             if thisHeight < self.mybestheight and thisHeight >=1:
-                print "Start sending blocks here"
+                data_block, pblock, nonce = CaBlock(thisHeight +1).dump()
+                cblock = pickle.dumps(pblock)  
+                cdatablock = pickle.dumps(data_block)
+                message = messages.create_send_block(self.nodeid, cdatablock, cblock, nonce)
+                self.write(message)
+                print "block %d send to %s" %(thisHeight +1, self.remote_nodeid)
+
                 
 
 
 
     def handleRECEIVEDBLOCK(self, line):
-        pass
+        data = messages.read_message(line)
+        print "Proccesing block %d from %s" %(self.mybestheight +1, self.remote_nodeid)
+        data_block = pickle.loads(data["raw"])
+        pblock = pickle.loads(data["pblock"])
+        nonce = data["bnonce"]
 
+        # procces this block 
+        if Proccess().thisBlock(data_block, pblock, nonce):
+            logg("Block accepted\n")
+            print "Block accepted"
+            if CBlockchain().WriteBlock(pblock, data_block, nonce):
+                logg("Block successfull added to database")
+                print "Block added to database"
 
 
 
