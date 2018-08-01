@@ -103,6 +103,8 @@ class NCProtocol(Protocol):
                     self.handle_ADDR(line)
                 elif envelope['msgtype'] == 'sync':
                     self.handle_SYNC(line)
+                elif envelope['msgtype'] == 'givemeblocks':
+                    self.handle_SENDBLOCKS(line)
 
     def send_PING(self):
         _print(" [>] PING   to", self.remote_nodeid, "at", self.remote_ip)
@@ -123,7 +125,26 @@ class NCProtocol(Protocol):
 
     def handle_SYNC(self, line):
         _print(" [>] Got reply abou sync message from " + self.remote_nodeid)
-        print line
+        data = messages.read_message(line)
+
+        if data["bestheight"] > self.mybestheight:
+            # we have missing blocks
+            diifrence = data["bestheight"] - self.mybestheight
+            print "We need sync, we are behind %d blocks" %diifrence
+            syncme = messages.create_ask_blocks(self.nodeid, self.mybesthash)
+            self.write(syncme)
+
+        elif data["bestheight"] == self.mybestheight:
+            print "We are synced"
+
+
+    def handle_SENDBLOCKS(self, line):
+        _print(" [>] Got sendblocks message from " + self.remote_nodeid)
+        data = messages.read_message(line)
+        thisHeight = CBlockIndex(data["besthash"]).Height()
+        # be sure that we are not behind
+        if thisHeight < self.mybestheight:
+            print "Start sending blocks here"
 
 
 
