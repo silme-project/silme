@@ -523,6 +523,7 @@ class CaBlock(object):
 
     def pblock(self):
         pblock = CBlock()
+        pblock.Nullvtx()
         for tx in self.readytxs:
             pblock.vtx.append(tx)
         pblock.hashMerkleRoot = pblock.BuildMerkleTree()
