@@ -140,10 +140,12 @@ class NCProtocol(Protocol):
             # we have missing blocks
             diifrence = data["bestheight"] - self.mybestheight
             print "We need sync, we are behind %d blocks" %diifrence
+            self.factory.dialog = "Need sync"
             syncme = messages.create_ask_blocks(self.nodeid, self.mybesthash)
             self.write(syncme)
 
         elif data["bestheight"] == self.mybestheight:
+            self.factory.dialog = "Synced"
             logg("we are synced")
 
 
@@ -262,6 +264,7 @@ class NCFactory(Factory):
         self.numProtocols = 0
         self.nodeid = cryptotools.generate_nodeid()[:10]
         self.status = None
+        self.dialog = "n/a"
 
     def startFactory(self):
         _print(" [ ] NODEID:", self.nodeid)

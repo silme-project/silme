@@ -62,7 +62,7 @@ class silme:
 
 
     def networkinginfo(self):
-        return "Status: %s | Connected Peers: %d" %(self.factory.status, len(self.factory.peers))
+        return "Status: %s | Dialog: %s | Connected Peers: %d" %(self.factory.status, self.factory.dialog, len(self.factory.peers))
         
 
     def _update(self):
