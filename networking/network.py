@@ -21,16 +21,14 @@ parentdir = os.path.dirname(currentdir)
 sys.path.insert(0,parentdir)
 
 from dboperations import *
+from bootstrap_nodes import *
 from time import time
 
 
 
 PING_INTERVAL = 1200.0 # 20 min = 1200.0
 SYNC_INTERVAL = 15 # 15 seconds
-BOOTSTRAP_NODES = ["localhost:1992",
-                  "localhost:5007",
-                  "localhost:5006",
-                  "localhost:5005"]
+
 
 def _print(*args):
     time = datetime.now().time().isoformat()[:8]
