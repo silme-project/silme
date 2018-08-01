@@ -15,6 +15,7 @@ You can contribute to silme, simple open a pull request
 cd silme
 ./silme-qt
 ```
+![Alt text](http://i65.tinypic.com/wirl29.jpg?raw=true "Title")
 
 # USAGE
 
