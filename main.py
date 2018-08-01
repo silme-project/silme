@@ -180,9 +180,6 @@ class Proccess(object):
             return False
 
 
-        print pblock.hashMerkleRoot
-        print pblock.BuildMerkleTree()
-
 
         # check merkle root 
         if pblock.hashMerkleRoot != pblock.BuildMerkleTree():
