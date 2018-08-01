@@ -142,8 +142,8 @@ class NCProtocol(Protocol):
         _print(" [>] Got sendblocks message from " + self.remote_nodeid)
         data = messages.read_message(line)
         thisHeight = CBlockIndex(data["besthash"]).Height()
-        # be sure that we are not behind
-        if thisHeight < self.mybestheight:
+        # be sure that we are not behind, and peer has genesis block 
+        if thisHeight < self.mybestheight and thisHeight >=1:
             print "Start sending blocks here"
 
 
