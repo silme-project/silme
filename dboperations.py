@@ -377,11 +377,15 @@ class CBlockIndex(CDB):
             self.hash = self.Read(self.templates.cblockindex["gethashbyheight"], [self.block]).fetchone()[0]
             self.raw = self.Read(self.templates.cblockindex["getrawbyheight"], [self.block]).fetchone()[0]
             self.transactions = self.Read(self.templates.cblockindex["gettxsbyheight"], [self.block]).fetchall()
+            if CBlockchain().getBestHeight() > 1:
+                self.nonce = self.Read(self.templates.cblockindex["getnoncebyheight"], [self.block]).fetchone()[0]
         else:
             self.hash = self.block
             self.height = self.Read(self.templates.cblockindex["getheightbyhash"], [self.block]).fetchone()[0]
             self.raw = self.Read(self.templates.cblockindex["getrawbyhash"], [self.block]).fetchone()[0]
             self.transactions = self.Read(self.templates.cblockindex["gettxsbyhash"], [self.height]).fetchall()
+            if CBlockchain().getBestHeight() > 1:
+                self.nonce = self.Read(self.templates.cblockindex["getnoncebyhash"], [self.height]).fetchone()
     # CBlockIndex basic operations
 
     
