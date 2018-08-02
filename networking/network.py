@@ -189,8 +189,7 @@ class NCProtocol(Protocol):
         # ordering to avoid diffrent hashes 
         for x in xrange(len(pblock.vtx)):
             r = OrderedDict(pblock.vtx[x])
-            del pblock.vtx[x]
-            pblock.vtx.append(dict(r.items()))
+            pblock.vtx[x] = dict(r.items())
 
         # procces this block 
         if Proccess().thisBlock(data_block, pblock, nonce):
