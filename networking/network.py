@@ -182,6 +182,14 @@ class NCProtocol(Protocol):
         data_block = pickle.loads(data["raw"])
         pblock = pickle.loads(data["pblock"])
         nonce = data["bnonce"]
+        
+        # transactions are hashed via dict, 
+        # when a dict changes order produces diffrent tx hash 
+        # ordering to avoid diffrent hashes 
+        for x in xrange(len(pblock.vtx)):
+            r = OrderedDict(pblock.vtx[x])
+            del pblock.vtx[x]
+            pblock.vtx.append(dict(r.items()))
 
         # procces this block 
         if Proccess().thisBlock(data_block, pblock, nonce):
@@ -190,9 +198,6 @@ class NCProtocol(Protocol):
             if CBlockchain().WriteBlock(pblock, data_block, nonce):
                 logg("Block successfull added to database")
                 print "Block added to database"
-
-
-
 
 
 
