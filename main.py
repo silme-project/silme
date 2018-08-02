@@ -35,7 +35,8 @@ if not os.path.exists(GetAppDir()):
         CBlockchain(Genesis=True)
         CWalletDB()
 
-
+if not os.path.exists(GetAppDir() + "/silme/silme.conf"):
+    sys.exit("Plewse run ./configure first")
 
 
 class CKey(object):
