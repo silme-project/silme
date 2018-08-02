@@ -69,12 +69,12 @@ class NCProtocol(Protocol):
 
     def print_peers(self):
         if len(self.factory.peers) == 0:
-            _print(" [!] PEERS: No peers connected.")
+            logg(" [!] PEERS: No peers connected.")
         else:
-            _print(" [ ] PEERS:")
+            logg(" [ ] PEERS:")
             for peer in self.factory.peers:
                 addr, kind = self.factory.peers[peer][:2]
-                _print("     [*]", peer, "at", addr, kind)
+                logg(" [*] %s at %s %s " %(peer, addr, kind))
 
     def write(self, line):
         self.transport.write(line + "\n")
@@ -102,7 +102,7 @@ class NCProtocol(Protocol):
                 if envelope['msgtype'] == 'hello':
                     self.handle_HELLO(line)
                 else:
-                    _print(" [!] Ignoring", envelope['msgtype'], "in", self.state)
+                    logg(" [!] Ignoring", envelope['msgtype'], "in", self.state)
             else:
                 if envelope['msgtype'] == 'ping':
                     self.handle_PING(line)
@@ -145,7 +145,7 @@ class NCProtocol(Protocol):
         if data["bestheight"] > self.mybestheight:
             # we have missing blocks
             diifrence = data["bestheight"] - self.mybestheight
-            print "We need sync, we are behind %d blocks" %diifrence
+            logg("We need sync, we are behind %d blocks" %diifrence)
             self.factory.dialog = "Need sync"
             syncme = messages.create_ask_blocks(self.nodeid, self.mybesthash)
             self.write(syncme)
@@ -171,15 +171,13 @@ class NCProtocol(Protocol):
                 cdatablock = pickle.dumps(data_block)
                 message = messages.create_send_block(self.nodeid, cdatablock, cblock, nonce)
                 self.write(message)
-                print "block %d send to %s" %(thisHeight +1, self.remote_nodeid)
-
-                
+                logg("block %d send to %s" %(thisHeight +1, self.remote_nodeid))
 
 
 
     def handleRECEIVEDBLOCK(self, line):
         data = messages.read_message(line)
-        print "Proccesing block %d from %s" %(self.mybestheight +1, self.remote_nodeid)
+        logg("Proccesing block %d from %s" %(self.mybestheight +1, self.remote_nodeid))
         data_block = pickle.loads(data["raw"])
         pblock = pickle.loads(data["pblock"])
         nonce = data["bnonce"]
@@ -194,11 +192,8 @@ class NCProtocol(Protocol):
         # procces this block 
         if Proccess().thisBlock(data_block, pblock, nonce):
             logg("Block accepted\n")
-            print "Block accepted"
             if CBlockchain().WriteBlock(pblock, data_block, nonce):
                 logg("Block successfull added to database")
-                print "Block added to database"
-
 
 
     def send_ADDR(self):
@@ -304,7 +299,7 @@ class NCFactory(Factory):
         self.dialog = "n/a"
 
     def startFactory(self):
-        _print(" [ ] NODEID:", self.nodeid)
+        logg("Node started")
 
     def stopFactory(self):
         pass
@@ -321,18 +316,18 @@ def Start(factory):
     DEFAULT_PORT = 5005
     try:
         endpoint = TCP4ServerEndpoint(reactor, 5656, interface="127.0.0.1")
-        _print(" [ ] LISTEN:", "127.0.0.1", ":", 5656)
+        logg(" [ ] LISTEN: at 127.0.0.1:%d" %5656)
         endpoint.listen(factory)
     except CannotListenError:
-        _print("[!] Address in use")
+        logg("[!] Address in use")
         raise SystemExit
 
 
     # connect to bootstrap addresses
-    _print(" [ ] Trying to connect to bootstrap hosts:")
+    logg(" [ ] Trying to connect to bootstrap hosts:")
     for bootstrap in BOOTSTRAP_NODES + [a+":"+str(DEFAULT_PORT) for a in []]:
 
-        _print("     [*] ", bootstrap)
+        logg("     [*] %s" %bootstrap)
         host, port = bootstrap.split(":")
         point = TCP4ClientEndpoint(reactor, host, int(port))
         d = connectProtocol(point, NCProtocol(factory, "SENDHELLO", "LISTENER"))
