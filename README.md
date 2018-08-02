@@ -13,6 +13,7 @@ You can contribute to silme, simple open a pull request
 # RUN SILME 
 ``` bash
 cd silme
+./configure
 ./silme-qt
 ```
 ![Alt text](http://i65.tinypic.com/wirl29.jpg?raw=true "Title")
@@ -22,7 +23,7 @@ cd silme
 # RPC
 
 Silme supports rpc commands
-To use rpc. you need to run ./configure in order to set username and password
+Using rpc 
 ``` bash
 ./silmed start - Start rpc server
 ./silmed stop - Stop rpc server
