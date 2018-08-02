@@ -14,6 +14,8 @@ from twisted.internet.endpoints import TCP4ServerEndpoint, TCP4ClientEndpoint
 import messages
 import cryptotools
 import os, inspect, sys
+import ConfigParser
+
 
 
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
@@ -313,9 +315,17 @@ def gotProtocol(p):
     
     
 def Start(factory):
-    DEFAULT_PORT = 5005
+    
+    config = ConfigParser.ConfigParser()
+    config.read(expanduser("~") + "/" + ".silme/silme.conf")
+
+    p2p_host = config.get('p2p', 'host')
+    p2p_port = config.get('p2p', 'port')
+
+    DEFAULT_PORT = p2p_port
+    
     try:
-        endpoint = TCP4ServerEndpoint(reactor, 5656, interface="127.0.0.1")
+        endpoint = TCP4ServerEndpoint(reactor, int(p2p_port), interface=p2p_host)
         logg(" [ ] LISTEN: at 127.0.0.1:%d" %5656)
         endpoint.listen(factory)
     except CannotListenError:
