@@ -315,18 +315,17 @@ def gotProtocol(p):
     
     
 def Start(factory):
-    
-    config = ConfigParser.ConfigParser()
-    config.read(expanduser("~") + "/" + ".silme/silme.conf")
 
+    config = ConfigParser.ConfigParser()
+    config.read(GetAppDir() + "/silme.conf")
+    
     p2p_host = config.get('p2p', 'host')
     p2p_port = config.get('p2p', 'port')
-
-    DEFAULT_PORT = p2p_port
-    
+        
     try:
         endpoint = TCP4ServerEndpoint(reactor, int(p2p_port), interface=p2p_host)
-        logg(" [ ] LISTEN: at 127.0.0.1:%d" %5656)
+        print " [ ] LISTEN: at %s:%d" %(p2p_host, (int(p2p_port)))
+        logg(" [ ] LISTEN: at %s:%d" %(p2p_host, (int(p2p_port))))
         endpoint.listen(factory)
     except CannotListenError:
         logg("[!] Address in use")
@@ -335,10 +334,12 @@ def Start(factory):
 
     # connect to bootstrap addresses
     logg(" [ ] Trying to connect to bootstrap hosts:")
-    for bootstrap in BOOTSTRAP_NODES + [a+":"+str(DEFAULT_PORT) for a in []]:
+    for bootstrap in BOOTSTRAP_NODES + [a+":"+str(int(p2p_port)) for a in []]:
 
         logg("     [*] %s" %bootstrap)
         host, port = bootstrap.split(":")
+        print host, port 
+        print 
         point = TCP4ClientEndpoint(reactor, host, int(port))
         d = connectProtocol(point, NCProtocol(factory, "SENDHELLO", "LISTENER"))
         d.addCallback(gotProtocol)
