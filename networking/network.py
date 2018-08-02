@@ -324,7 +324,6 @@ def Start(factory):
         
     try:
         endpoint = TCP4ServerEndpoint(reactor, int(p2p_port), interface=p2p_host)
-        print " [ ] LISTEN: at %s:%d" %(p2p_host, (int(p2p_port)))
         logg(" [ ] LISTEN: at %s:%d" %(p2p_host, (int(p2p_port))))
         endpoint.listen(factory)
     except CannotListenError:
@@ -335,11 +334,8 @@ def Start(factory):
     # connect to bootstrap addresses
     logg(" [ ] Trying to connect to bootstrap hosts:")
     for bootstrap in BOOTSTRAP_NODES + [a+":"+str(int(p2p_port)) for a in []]:
-
         logg("     [*] %s" %bootstrap)
         host, port = bootstrap.split(":")
-        print host, port 
-        print 
         point = TCP4ClientEndpoint(reactor, host, int(port))
         d = connectProtocol(point, NCProtocol(factory, "SENDHELLO", "LISTENER"))
         d.addCallback(gotProtocol)
