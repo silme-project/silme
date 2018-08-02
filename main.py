@@ -534,18 +534,31 @@ class CaBlock(object):
 
     def cltxs(self):
         for tx in self.txs:
+            txhash = tx[5]
             if tx[2] == 0:
-                txhash = tx[5]
                 # coinbase transaction
+                CCoinbase = CTransaction()
+                CCoinbase.add("version", CTx(txhash).Version())
+                CCoinbase.add("prev_out", CTx(txhash).Prev())
+                CCoinbase.add("time", CTx(txhash).Time())
+                CCoinbase.input_script("")
+                CCoinbase.output_script(CTx(txhash).GetRecipten())
+                CCoinbase.add("value", CTx(txhash).Value())
+                CCoinbase.add("signature", CTx(txhash).GetSignature())
+                self.readytxs.append(CCoinbase)
+            else:
+
                 txNew = CTransaction()
                 txNew.add("version", CTx(txhash).Version())
                 txNew.add("prev_out", CTx(txhash).Prev())
                 txNew.add("time", CTx(txhash).Time())
-                txNew.input_script("")
-                txNew.output_script(CTx(txhash).GetRecipten())
+                txNew.add("input_script", CTx(txhash).InsScript())
+                txNew.add("output_script", CTx(txhash).OutScript())
                 txNew.add("value", CTx(txhash).Value())
                 txNew.add("signature", CTx(txhash).GetSignature())
                 self.readytxs.append(txNew)
+
+
         self.pblock()
 
     def dump(self):
