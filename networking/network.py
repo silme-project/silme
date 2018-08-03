@@ -57,10 +57,6 @@ class NCProtocol(Protocol):
         self.lc_sync = LoopingCall(self.send_SYNC)
         self.message = partial(messages.envelope_decorator, self.nodeid)
         
-        # local blockchain 
-        self.mybestheight = CBlockchain().getBestHeight()
-        self.mybesthash = CBlockchain().GetBestHash()
-
         self.factory.status = "Running"
 
     def connectionMade(self):
@@ -135,7 +131,9 @@ class NCProtocol(Protocol):
 
     def send_SYNC(self):
         logg("[>] Asking %s if we need sync" %self.remote_nodeid)
-        sync = messages.create_sync(self.nodeid, self.mybestheight, self.mybesthash)
+        # Send a sync message to remote peer 
+        # A sync message contains our best height and our besthash
+        sync = messages.create_sync(self.nodeid, CBlockchain().getBestHeight(), CBlockchain().GetBestHash())
         self.write(sync)
 
 
@@ -144,15 +142,15 @@ class NCProtocol(Protocol):
         logg("[>] Got reply about sync message from %s" %self.remote_nodeid)
         data = messages.read_message(line)
 
-        if data["bestheight"] > self.mybestheight:
+        if data["bestheight"] > CBlockchain().getBestHeight():
             # we have missing blocks
-            diifrence = data["bestheight"] - self.mybestheight
+            diifrence = data["bestheight"] - CBlockchain().getBestHeight()
             logg("We need sync, we are behind %d blocks" %diifrence)
             self.factory.dialog = "Need sync"
-            syncme = messages.create_ask_blocks(self.nodeid, self.mybesthash)
+            syncme = messages.create_ask_blocks(self.nodeid, CBlockchain().GetBestHash())
             self.write(syncme)
 
-        elif data["bestheight"] == self.mybestheight:
+        elif data["bestheight"] == CBlockchain().getBestHeight():
             self.factory.dialog = "Synced"
             logg("we are synced")
 
@@ -167,7 +165,7 @@ class NCProtocol(Protocol):
             self.transport.loseConnection()
         else:
             # be sure that we are not behind, and peer has genesis block 
-            if thisHeight < self.mybestheight and thisHeight >=1:
+            if thisHeight < CBlockchain().getBestHeight() and thisHeight >=1:
                 data_block, pblock, nonce = CaBlock(thisHeight +1).dump()
                 cblock = pickle.dumps(pblock)  
                 cdatablock = pickle.dumps(data_block)
@@ -179,7 +177,7 @@ class NCProtocol(Protocol):
 
     def handleRECEIVEDBLOCK(self, line):
         data = messages.read_message(line)
-        logg("Proccesing block %d from %s" %(self.mybestheight +1, self.remote_nodeid))
+        logg("Proccesing block %d from %s" %(CBlockchain().getBestHeight() +1, self.remote_nodeid))
         data_block = pickle.loads(data["raw"])
         pblock = pickle.loads(data["pblock"])
         nonce = data["bnonce"]
