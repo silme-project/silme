@@ -333,7 +333,7 @@ def Start(factory):
 
     # connect to bootstrap addresses
     logg(" [ ] Trying to connect to bootstrap hosts:")
-    for bootstrap in BOOTSTRAP_NODES + [a+":"+str(int(p2p_port)) for a in []]:
+    for bootstrap in BOOTSTRAP_NODES:
         logg("     [*] %s" %bootstrap)
         host, port = bootstrap.split(":")
         point = TCP4ClientEndpoint(reactor, host, int(port))
