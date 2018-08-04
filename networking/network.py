@@ -49,8 +49,10 @@ class NCProtocol(Protocol):
         self.VERSION = 0
         self.ProtocolVersion = version._protocol_version
         self.remote_nodeid = None
+        self.remote_node_protocol_version = None
         self.kind = kind
         self.nodeid = self.factory.nodeid
+
 
 
         self.lc_ping = LoopingCall(self.send_PING)
@@ -247,7 +249,7 @@ class NCProtocol(Protocol):
 
 
     def send_HELLO(self):
-        hello = messages.create_hello(self.nodeid, self.VERSION)
+        hello = messages.create_hello(self.nodeid, self.VERSION, self.ProtocolVersion)
         #_print(" [ ] SEND_HELLO:", self.nodeid, "to", self.remote_ip)
         self.transport.write(hello + "\n")
         self.state = "SENTHELLO"
@@ -258,12 +260,15 @@ class NCProtocol(Protocol):
         try:
             hello = messages.read_message(hello)
             self.remote_nodeid = hello['nodeid']
+            self.remote_node_protocol_version = hello["protocol"]
+
+
             if self.remote_nodeid == self.nodeid:
                 logg("[!] Found myself at %s" %self.host_ip)
                 self.transport.loseConnection()
             else:
                 if self.state == "GETHELLO":
-                    my_hello = messages.create_hello(self.nodeid, self.VERSION)
+                    my_hello = messages.create_hello(self.nodeid, self.VERSION, self.ProtocolVersion)
                     self.transport.write(my_hello + "\n")
                 self.add_peer()
                 self.state = "READY"
@@ -283,9 +288,9 @@ class NCProtocol(Protocol):
 
 
     def add_peer(self):
-        entry = (self.remote_ip, self.kind, time())
+        entry = (self.remote_ip, self.kind, self.remote_node_protocol_version, time())
         self.factory.peers[self.remote_nodeid] = entry
-        logg("[] peer %s at %s added to pers list" %(self.remote_nodeid, self.remote_ip))
+        logg("[] peer %s at %s with protocol versiuon %d added to peers list" %(self.remote_nodeid, self.remote_ip, self.remote_node_protocol_version))
 
 
 

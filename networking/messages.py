@@ -42,8 +42,8 @@ def create_ackhello(nodeid):
     msg = {}
     return make_envelope("ackhello", msg, nodeid)
 
-def create_hello(nodeid, version):
-    msg = {'version': version}
+def create_hello(nodeid, version, protoversion):
+    msg = {'version': version, 'protocol': protoversion}
     return make_envelope("hello", msg, nodeid)
 
 
