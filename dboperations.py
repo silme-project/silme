@@ -294,6 +294,11 @@ class CWalletDB(CDB):
 
 
         thisHash = self.FindHash(amount)
+        
+        if not thisHash:
+            logg("GenerateTransaction() Coinbase maturity expected")
+            return False, "Coinbase maturity expected"
+            
 
         priv = self.FindAddrFromHash(thisHash[0])
 
