@@ -231,20 +231,14 @@ class Proccess(object):
 
 
     def thisTxIsVaild(self, tx):
-        
-        
         # check transaction verification
-        conn = sqlite3.connect(GetAppDir() + "/blockchain.db")
-        conn.text_factory = str
-        cur = conn.cursor()
-
         
         # store signature in memory
         signature = tx["signature"]
         # remove signature from tx
         del tx["signature"]
 
-        pub = cur.execute("SELECT output_script FROM transactions where hash = ?", (tx["prev_out"],)).fetchone()[0].encode("hex_codec")[2:132]
+        pub = CTx(tx["prev_out"]).GetRecipten()
 
         try:
             ecdsa_verify(str(tx),signature,pub)
