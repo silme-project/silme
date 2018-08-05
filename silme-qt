@@ -144,8 +144,10 @@ class silme:
         amount = self.amount.get()
         recipt = self.to.get()
         
-        if not CWalletDB().GenerateTransaction(float(amount), str(recipt)):
-            tkMessageBox.showinfo("Error", CWalletDB().GenerateTransaction(int(amount), str(recipt)))
+        tx_ok, message = CWalletDB().GenerateTransaction(float(amount), str(recipt))
+
+        if not tx_ok:
+            tkMessageBox.showinfo("Error", message)
             return 0
         else:
             tkMessageBox.showinfo("Sending...", "Your coins are being sent, this could take a while.")
