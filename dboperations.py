@@ -6,6 +6,8 @@
 import sqlite3 
 from sqlitetemplates import *
 from utils import *
+from consensus import *
+
 
 
 
@@ -283,7 +285,7 @@ class CWalletDB(CDB):
            logg("GenerateTransaction() Failed not enought balance to create this transaction")
            return False, "Failed not enought balance to create this transaction"
 
-        if amount > 50:
+        if amount > nCoin:
             # Transactions currenlty supports one input to spend 
             # thats means that in a transaction cant be spend more than 50 coins 
             # wich is the initial block value 
