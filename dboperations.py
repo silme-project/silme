@@ -271,15 +271,24 @@ class CWalletDB(CDB):
 
     def GenerateTransaction(self, amount, recipten):
         mybalance = self.GetBalance()
-        if mybalance < amount:
-           # not enought balance to create this transaction
-           logg("GenerateTransaction() Failed not enought balance to create this transaction")
-           return False
+
 
         if len(recipten) != 130:
            # not vaild recipten key
            logg("GenerateTransaction() Failed not vaild recipten key")
-           return False
+           return False, "Failed not vaild recipten key"
+
+        if mybalance < amount:
+           # not enought balance to create this transaction
+           logg("GenerateTransaction() Failed not enought balance to create this transaction")
+           return False, "Failed not enought balance to create this transaction"
+
+        if amount > 50:
+            # Transactions currenlty supports one input to spend 
+            # thats means that in a transaction cant be spend more than 50 coins 
+            # wich is the initial block value 
+            logg("GenerateTransaction() Cant spend more than 50 coins")
+            return False, "Cant spend more than 50 coins"
 
 
         thisHash = self.FindHash(amount)
@@ -298,7 +307,7 @@ class CWalletDB(CDB):
         if MemPool().AddTx(txNew):
             print "tx added to memppool"
 
-        return True 
+        return True, "ok"
 
 
             
