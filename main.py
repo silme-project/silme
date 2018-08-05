@@ -5,21 +5,8 @@
 
 from bitcoin import *
 from dboperations import * 
+from consensus import *
 
-
-
-# One silme can be split into 100000000 satoshi
-COIN = 100000000
-# Proof of Work limit 
-bnProofOfWorkLimit = 0x00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
-# Reward Per block
-nCoin = 50
-# Halving Every 210000 blocks
-nSubsibyHalvingInterval = 210000
-# MaxBlockSize
-nMaxSize = 1000000 # 1MB
-
-COINBASE_MATURITY = 4
 
 
 
