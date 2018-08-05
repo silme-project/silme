@@ -267,7 +267,7 @@ class CWalletDB(CDB):
         for transaction in self.GetTxs():
             # check if tx balancde is >= ampunt wich we want to spend
             if not CTx(transaction[0]).WeSpend():
-                if CTx(transaction[0]).Value() >= amount * COIN:
+                if CTx(transaction[0]).Value() >= amount * COIN and CTx(transaction[0]).IsReadyToSpend():
                     return transaction
 
 
@@ -371,11 +371,12 @@ class CTx(CDB):
 
     
     def IsReadyToSpend(self):
-        # Return True if iscoinbase and pass coinbasemajurity 
-        if not self.isCoinbase():
+        # Check if a transaction can be spend 
+        
+        if not self.isCoinbase() or CBlockchain().getBestHeight() > self.Height() + COINBASE_MATURITY:
             return True
-        return self.Height() + 3 >  CBlockchain().getBestHeight()
-
+        elif CBlockchain().getBestHeight() < self.Height() + COINBASE_MATURITY:
+            return False
 
     def GetSender(self):
         inputn = self.Prev()
