@@ -146,8 +146,8 @@ class NCProtocol(Protocol):
 
         if data["bestheight"] > CBlockchain().getBestHeight():
             # we have missing blocks
-            diifrence = data["bestheight"] - CBlockchain().getBestHeight()
-            logg("We need sync, we are behind %d blocks" %diifrence)
+            diffrence = data["bestheight"] - CBlockchain().getBestHeight()
+            logg("We need sync, we are behind %d blocks" %diffrence)
             self.factory.dialog = "Need sync"
             syncme = messages.create_ask_blocks(self.nodeid, CBlockchain().GetBestHash())
             self.write(syncme)
@@ -290,7 +290,7 @@ class NCProtocol(Protocol):
     def add_peer(self):
         entry = (self.remote_ip, self.kind, self.remote_node_protocol_version, time())
         self.factory.peers[self.remote_nodeid] = entry
-        logg("[] peer %s at %s with protocol versiuon %d added to peers list" %(self.remote_nodeid, self.remote_ip, self.remote_node_protocol_version))
+        logg("[] peer %s at %s with protocol version %d added to peers list" %(self.remote_nodeid, self.remote_ip, self.remote_node_protocol_version))
 
 
 
