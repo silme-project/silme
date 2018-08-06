@@ -307,7 +307,7 @@ class NCFactory(Factory):
         logg("Node started")
 
     def stopFactory(self):
-        pass
+        reactor.callFromThread(reactor.stop)
 
     def buildProtocol(self, addr):
         return NCProtocol(self, "GETHELLO", "LISTENER")
