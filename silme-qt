@@ -145,8 +145,8 @@ class silme:
         recipt = self.to.get()
         
         
-        if not amount:
-            # case amout not entered
+        if not amount or float(amount) == float(0):
+            # case amout not entered, or amount = 0 
             tkMessageBox.showinfo("Error", "Pease enter a amount")
             return 0
         
