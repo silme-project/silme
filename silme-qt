@@ -21,6 +21,8 @@ class silme:
 
     def __init__(self, root):
         self.root = root
+        self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
+        
         self.frame = Frame(self.root)
         self.frame.pack()
         self.c = StringVar()
@@ -173,6 +175,13 @@ class silme:
         elif self.startorstopmining_.get() == "Start":
             os.system('./miner &')
             tkMessageBox.showinfo("Mining...", "SilmeMiner Started.")
+      
+    
+    def on_closing(self):
+        if tkMessageBox.askokcancel("Quit", "Do you want to quit?"):
+            # stop factory before close 
+            self.factory.stopFactory()
+            root.destroy()
 
 
 
