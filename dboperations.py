@@ -23,7 +23,7 @@ class CDB(object):
             try:
                 self.cur.execute(statment)
             except Exception as e:
-                print e
+                logg(e)
                 return False
             else:
                 self.conn.commit()
@@ -32,7 +32,7 @@ class CDB(object):
             try:
                 self.cur.execute(statment, (values))
             except Exception as e:
-                print e 
+                logg(e)
                 return False 
             else:
                 self.conn.commit()
@@ -146,7 +146,7 @@ class CBlockchain(CDB):
                         sender = "Coinbsase"
                     else: 
                         sender = CTx(tx[5]).GetSender()
-                    print sender
+                        
                     transactions.append({"hash": tx[5], 
                                          "type": "receive", 
                                          "value": CTx(tx[5]).Value(),
