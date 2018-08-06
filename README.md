@@ -2,7 +2,7 @@
 
 ### What is silme ?
 
-A simple implementation of cryptoccurency Blockchain writen in python
+A simple implementation of p2p cryptoccurency Blockchain writen in python
 
 ### What i can do with silme ?
 
@@ -13,6 +13,19 @@ A simple implementation of cryptoccurency Blockchain writen in python
 
 Curently silme transaction use 1 input, that means in a transaction can't be spend more than 50 coins wich that is the initial block reward value, so if bob wants to send to alice 200 coins need to make 4 transactions to alice with 50 coins per transaction @ Need fix 
 
+### Peer-to-Peer (p2p)
+
+Since this is a peer-to-peer network, every instance has to be both the a server and a client, both server and client starts with silme-qt, server runs under defaults [p2p] at silme.conf
+
+
+ -   Boostrap by way of a preconfigured list
+ -   Connect to other nodes and make a handshake.
+ -   Ask peers for nodes and connect to them
+ -   Ask peers if sync needed 
+ -   Sync with peers if needed
+ -   Ping peers
+ -   Send new mined blocks to other peers
+ -   Validate transactions and pass it to other peers 
 
 
 
