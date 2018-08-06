@@ -1,6 +1,21 @@
 # Silme
 
-A simple implementation of Blockchain writen in python, using silme you can generate new blocks (pow sha256) and create transactions, node is not implemented yet so the new transactions and blocks cant be broadcasted to other peers
+### What is silme ?
+
+A simple implementation of cryptoccurency Blockchain writen in python
+
+### What i can do with silme ?
+
+- Using silme anyone can mine new blocks and generate new coins 
+- Using silme anyone can receive and send coins to any vaild silme key
+
+### Limitations 
+
+Curently silme transaction use 1 input, that means in a transaction can't be spend more than 50 coins wich that is the initial block reward value, so if bob wants to send to alice 200 coins need to make 4 transactions to alice with 50 coins per transaction @ Need fix 
+
+
+
+
 
 # Discussion 
 
