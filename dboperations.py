@@ -235,7 +235,13 @@ class CWalletDB(CDB):
     def GetPriv(self, pub):
         f = self.Read(self.templates.wallet["getpriv"], [pub]).fetchone()[0]
         return f 
-
+    
+    
+    def SpendOrReceive(self, txhash):
+        if self.WeSpend(txhash):
+            return "Spend"
+        else:
+            return "receive"
 
 
     def GetBalance(self):
@@ -386,6 +392,13 @@ class CTx(CDB):
     def GetSender(self):
         inputn = self.Prev()
         return CTx(inputn).GetRecipten()
+    
+    def GetType(self):
+        # Return transaction type in str format
+        if self.isCoinbase():
+            return "coinbase"
+        else:
+            return "normal"
 
 
 
