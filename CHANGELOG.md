@@ -1,6 +1,16 @@
 # Changelog
 All notable changes to this project will be documented in this file after [commit](https://github.com/silme-project/silme/commit/328ec6c7afc90809e3a3fc18b32a80e6e0a042e5)
 
+## v-0.0.3-beta 
+
+- Added coinbase maturity, coinbase transactions need 4 blocks before them can be spent 
+- Added showtxs.py, A simple GUI tool to explorer wallet transactions
+- GUI GenerateTransaction returns Response
+- Added protocol version (p2p)
+- GUI confirm exit && stop (p2p)
+- Removed unused code
+- Fix typos 
+
 ## v-0.0.2-beta
 
 - Blockchain sync works without need to restart the client
