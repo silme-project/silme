@@ -88,11 +88,7 @@ cd silme
 cd blockexplorer
 python explorer.py
 ```
-Block explorer is build in top of flask, block explorer runs under default port 4989, in order to keep block explorer updated with blockchain first need to run silme-qt..
-
-Feautures:
-  - Search by block hash, block height, key
-  - Show block info, hash, prev, merkle, time, bits, nonce transactions etc
+Block explorer is build in top of flask, block explorer allows you to view information about blocks, addresses, and transactions on the Silme blockchain, block explorer runs under default port 4989, in order to keep block explorer updated with blockchain first need to run silme-qt..
 
 ![Alt text](http://i64.tinypic.com/nnqvya.png?raw=true "Title")
 
