@@ -463,6 +463,10 @@ class CBlockIndex(CDB):
     def Txs(self):
         # Return block transactions 
         return self.transactions
+    
+    def CountTxs(self):
+        # Count block transactions 
+        return len(self.transactions)
 
 
 
