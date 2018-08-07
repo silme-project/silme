@@ -1,0 +1,69 @@
+
+
+<h2>REST API</h2>
+
+
+<p><b>Get block info by hash</b></p>
+
+
+<pre><code>  /api/block/[:hash]
+  /api/block/000009cb25c348b85b01819c52402adea224580263fbe9b915be8502c5220f82
+</code></pre>
+
+<p><a target="_blank" href="http://127.0.0.1:7878/api/block/000009cb25c348b85b01819c52402adea224580263fbe9b915be8502c5220f82">Example</a></p>
+
+<p><b>Get rawblock by hash</b></p>
+
+
+<pre><code>  /api/rawblock/[:hash]
+  /api/rawblock/000009cb25c348b85b01819c52402adea224580263fbe9b915be8502c5220f82
+</code></pre>
+
+<a target="_blank" href="http://127.0.0.1:7878/api/rawblock/000009cb25c348b85b01819c52402adea224580263fbe9b915be8502c5220f82">Example</a>
+
+
+<p><b>Get block hash by height</b></p>
+
+
+<pre><code>  /api/block-index/[:height]
+  /api/block-index/1
+</code></pre>
+
+
+
+<p>This would return:</p>
+
+<pre><code>{"blockHash":"000009cb25c348b85b01819c52402adea224580263fbe9b915be8502c5220f82"}
+</code></pre>
+
+<p><b>which is the hash of the Genesis block (1 height)</b></p>
+
+
+<a target="_blank" href="http://127.0.0.1:7878/api/block-index/1">Example</a>
+
+
+
+<h2>Transactions</h2>
+
+
+
+<pre><code>  /api/tx/[:txid]
+  /api/tx/5ed9d0ab7fe5a6adbf574784430cb900aebb4ad72457bfeb5f66adda6ad98088</code></pre>
+
+<p><a target="_blank" href="http://127.0.0.1:7878/api/tx/5ed9d0ab7fe5a6adbf574784430cb900aebb4ad72457bfeb5f66adda6ad98088">Example</a></p>
+
+
+<h2>Address Operations</h2>
+
+
+
+<pre><code>  /api/balance/key/[:pubkey]
+  /api/balance/043823ae6c03495c303a55c1c5d330734572f7c8228b091cd4ffcdfb9714b986b44362ba4a6285a2e29ff8839d952d2aac33c3b5b60aa34f8aadeca8efb21a035f
+  
+</code></pre>
+
+<p>The response contains the pubkey balance.</p>
+
+<p><a target="_blank" href="http://127.0.0.1:7878/api/balance/key/043823ae6c03495c303a55c1c5d330734572f7c8228b091cd4ffcdfb9714b986b44362ba4a6285a2e29ff8839d952d2aac33c3b5b60aa34f8aadeca8efb21a035f">Example</a></p>
+
+

@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Silme Block Explorer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.css" />
+    <script type="text/javascript" src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
+</head>
+<body>
+    <nav>
+        </a>
+    </nav>
+
+    <h1>Silme block explorer</h1>
+
+    
+
+    <div id="map" style="width:100%; height:200px;"></div>
+
+    <header>
+        
+        <div class="byline">
+            All Silme Blocks</a>
+        </div>
+    </header>
+
+    <table border=1 cellpadding=7>
+        <tr>
+            <th>Height</th>
+            <th>Hash</th>
+            <th>Age (secs)</th>
+            <th>Txs</th>
+        </tr>
+    {% for obj in object_list %}
+        <tr>
+
+            <!--<td><a href="{{ url_for('detail' ,row_id=obj.height) }}">{{ obj.height }}</a></td>-->
+
+            <td>{{ obj.height }}</td>
+            <td>{{ obj.hash }}</td>
+            <td>{{ obj.age }}</td>
+            <td>{{ obj.transactions }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+
+    <script type="text/javascript">
+        var map = L.map('map').setView([0, 0], 0);
+        var osmLayer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: 'Data, imagery and map information provided by <a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a>.'
+        });
+        map.addLayer(osmLayer);
+        var data = {
+          "type": "FeatureCollection",
+          "features": [
+            {% for obj in object_list %}
+            {
+              "type": "Feature",
+              "properties": {
+                "height": "{{ obj.height }}",
+                "height": "{{ obj.height }}"
+              },
+              "geometry": {
+                "type": "Point",
+                "coordinates": [{{ obj.x }}, {{ obj.y }}]
+              }
+            }{% if not loop.last %},{% endif %}
+            {% endfor %}
+          ]
+        };
+        var blackIcon = L.Icon.extend({
+            options: {
+                iconUrl: "{{ url_for('static', filename='marker-24.png') }}",
+                iconSize: [24, 24]
+            }
+        });
+        var dataLayer = L.geoJson(data, {
+            pointToLayer: function (feature, latlng) {
+                return L.marker(latlng, {icon: new blackIcon()});
+            },
+            onEachFeature: function(feature, layer) {
+                layer.bindPopup(
+                    '<a href="' + feature.properties.height + '/">' +
+                        feature.properties.height +
+                    '</a>'
+                );
+            }
+        });
+        map.addLayer(dataLayer);
+    </script>
+    
+
+    
+</body>
+</html>
