@@ -81,6 +81,25 @@ version - Return silme version
 
 ```
 
+# RUN BLOCK EXPLORER
+``` bash
+cd silme 
+./configure
+cd blockexplorer
+python explorer.py
+```
+Block explorer is build in top of flask, block explorer runs under default port 4989, in order to keep block explorer updated with blockchain first need to run silme-qt..
+
+Feautures:
+  - Search by block hash, block height, key
+  - Show block info, hash, prev, merkle, time, bits, nonce transactions etc
+
+![Alt text](http://i64.tinypic.com/nnqvya.png?raw=true "Title")
+
+
+
+
+
 ## MINING
 
 Start Mining using the start button in mining section in silme-qt, when you will find a vailid block you will credit the coinbase transaction value, to stop mining click the stop button in mining section, alternative for testing purposes you can use ./miner -d 1 to enable mining with debug results should be 
