@@ -4,6 +4,7 @@ currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfram
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0,parentdir)
 from dboperations import *
+from main import *
 import datetime
 
 
@@ -17,12 +18,69 @@ def singleblockall(height):
               "txs": CBlockIndex(height).CountTxs(),
               "prev": CBlockIndex(height).Prev(),
               "merkle": CBlockIndex(height).Merkle(),
-              "nonce": CBlockIndex(height).Nonce()
+              "nonce": CBlockIndex(height).Nonce(),
+              "version": CBlockIndex(height).Version(),
+              "diff": str(CalculateDiff(CBlockIndex(height).Bits())),
+              "time": datetime.datetime.fromtimestamp(CBlockIndex(height).Time()).strftime('%Y-%m-%d %H:%M:%S')
+
             }
 
     ppblocks.append(blocks)
 
     return ppblocks
+
+
+def blocktxs(height):
+    ttxs = []
+    txs = CBlockIndex(height).Txs()
+    for tx in txs:
+        txhash = tx[5]
+
+        sender = ""
+        if CTx(tx[5]).isCoinbase():
+            sender = "coinbsase"
+        else:
+            sender = CTx(tx[5]).GetSender()
+
+
+
+        tx = {"hash": tx[5],
+              "prev": CTx(tx[5]).Prev(),
+              "value": CTx(tx[5]).Value(),
+              "recipten": CTx(tx[5]).GetRecipten(),
+              "inputscript": CTx(tx[5]).InsScript().encode("hex"),
+              "outputscript": CTx(tx[5]).OutScript().encode("hex"),
+              "sender": sender,
+              "type": CTx(tx[5]).GetType()}
+
+        ttxs.append(tx)
+    return ttxs
+
+
+def singletx(txhash):
+    ttx = []
+    sender = ""
+    if CTx(txhash).isCoinbase():
+        sender = "coinbsase"
+    else:
+        sender = CTx(txhash).GetSender()
+
+
+
+    tx = {"hash": txhash,
+          "prev": CTx(txhash).Prev(),
+          "value": CTx(txhash).Value(),
+          "recipten": CTx(txhash).GetRecipten(),
+          "inputscript": CTx(txhash).InsScript().encode("hex"),
+          "outputscript": CTx(txhash).OutScript().encode("hex"),
+          "sender": sender,
+          "type": CTx(txhash).GetType()
+          }
+
+    ttx.append(tx)
+
+    return ttx
+
 
 
 def getblocksall():

@@ -351,10 +351,13 @@ def GetNextWorkRequired():
     return target2bits(bnNew)
 
 
-def CalculateDiff():
+def CalculateDiff(bits=None):
     """ Calculate current difficulty """
     # diff is minimun difficulty target / current_target 
-    p = bits2target(0x1d00ffff)
+    if bits:
+        p = bits2target(bits)
+    else:
+        p = bits2target(0x1d00ffff)
     y = bits2target(GetNextWorkRequired())
     return float(p) / float(y)
 

@@ -15,46 +15,91 @@
     </nav>
 
     <h1>Silme block explorer</h1>
-
-
-
     
 
     <div id="map" style="width:100%; height:200px;"></div>
 
+    {% for obj in object %}
+    <h3>Block # {{ obj.height }}</h3>
 
-    <h3>Search</h3>
-   
-    <form id="data" action="search">
-    <input type="text" name="data" id="locationfield" placeholder="Search for block, transaction, or key" size="24">
-    <button type="submit">Search</button>
-</form>
+    {% endfor %}
 
     <header>
-        
-        <div class="x">
-            Last Silme Blocks</a>
-        </div>
+        <h3>Summary</h3>
     </header>
+
+   
+
+    {% for obj in object %}
+
+
+
+    
+        <table border=0 cellpadding=2>
+        <tr>
+            <th>Version:</th>
+            <td>{{ obj.version }}</td>
+          </tr>
+          <tr>
+          <tr>
+            <th>Hash:</th>
+            <td>{{ obj.hash }}</td>
+          </tr>
+          <tr>
+            <th>Timestamp:</th>
+            <td>{{ obj.time }}</td>
+          </tr>
+          <tr>
+            <th>Prev:</th>
+            <td>{{ obj.prev }}</td>
+          </tr>
+          <tr>
+            <th>Merkle:</th>
+            <td>{{ obj.merkle }}</td>
+          </tr>
+          <tr>
+          <tr>
+            <th>Difficulty:</th>
+            <td>{{ obj.diff }}</td>
+          </tr>
+          <tr>
+            <th>Bits:</th>
+            <td>{{ obj.bits }}</td>
+          </tr>
+          <tr>
+            <th>Nonce:</th>
+            <td>{{ obj.nonce }}</td>
+          </tr>
+          <tr>
+            <th>Transactions:</th>
+            <td>{{ obj.txs }}</td>
+          </tr>
+    </table>
+    {% endfor %}
+
+    {% for obj in object %}
+    <h3>Transaction in block # {{ obj.height }}</h3>
+    {% endfor %}
+
+    
 
     <table border=1 cellpadding=7>
         <tr>
-            <th>Height</th>
             <th>Hash</th>
-            <th>Age (secs)</th>
-            <th>Txs</th>
+            <th>Value</th>
+            <th>Type</th>
         </tr>
-    {% for obj in object_list %}
+    {% for tx in txs %}
         <tr>
 
-            <td><a href="{{ url_for('detail' ,row_id=obj.height) }}">{{ obj.height }}</a></td>
+            <td><a href="{{ url_for('detail_tx' ,row_id=tx.hash) }}">{{ tx.hash }}</a></td>
 
-            <td>{{ obj.hash }}</td>
-            <td>{{ obj.age }}</td>
-            <td>{{ obj.transactions }}</td>
+            <td>{{ tx.value }}</td>
+            <td>{{ tx.type }}</td>
         </tr>
     {% endfor %}
     </table>
+    
     <script type="text/javascript">
         var map = L.map('map').setView([0, 0], 0);
         var osmLayer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -102,13 +147,6 @@
     </script>
 
     
-
-
-    <div class="x">
-            <a href="{{ url_for('allblocks')}}" target="_blank">Show all blocks |</a>
-            <a href="{{ url_for('api')}}" target="_blank">Rest api documantation</a>
-        </div>
-
     
 </body>
 </html>

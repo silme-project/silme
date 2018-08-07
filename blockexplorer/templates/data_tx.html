@@ -15,46 +15,58 @@
     </nav>
 
     <h1>Silme block explorer</h1>
-
-
-
     
 
     <div id="map" style="width:100%; height:200px;"></div>
 
+    {% for tx in txs %}
+    <h3>Transaction # {{ tx.hash }}</h3>
 
-    <h3>Search</h3>
-   
-    <form id="data" action="search">
-    <input type="text" name="data" id="locationfield" placeholder="Search for block, transaction, or key" size="24">
-    <button type="submit">Search</button>
-</form>
+    {% endfor %}
 
     <header>
-        
-        <div class="x">
-            Last Silme Blocks</a>
-        </div>
+        <h3>Summary</h3>
     </header>
 
-    <table border=1 cellpadding=7>
-        <tr>
-            <th>Height</th>
-            <th>Hash</th>
-            <th>Age (secs)</th>
-            <th>Txs</th>
-        </tr>
-    {% for obj in object_list %}
-        <tr>
+   
 
-            <td><a href="{{ url_for('detail' ,row_id=obj.height) }}">{{ obj.height }}</a></td>
+    {% for tx in txs %}
 
-            <td>{{ obj.hash }}</td>
-            <td>{{ obj.age }}</td>
-            <td>{{ obj.transactions }}</td>
+
+
+    
+        <table border=0 cellpadding=2>
+        <tr>
+            <th>Hash:</th>
+            <td>{{ tx.hash }}</td>
         </tr>
-    {% endfor %}
+        <tr>
+            <th>Prev:</th>
+            <td>{{ tx.prev }}</td>
+        </tr>
+        <tr>
+            <th>Value:</th>
+            <td>{{ tx.value }}</td>
+        </tr>
+        <tr>
+            <th>Sender:</th>
+            <td>{{ tx.sender }}</td>
+        </tr>
+        <tr>
+            <th>Recipten:</th>
+            <td>{{ tx.recipten }}</td>
+        </tr>
+        <tr>
+            <th>Type:</th>
+            <td>{{ tx.type }}</td>
+        </tr>
+           
     </table>
+    {% endfor %}
+
+
+    
+    
     <script type="text/javascript">
         var map = L.map('map').setView([0, 0], 0);
         var osmLayer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -102,13 +114,6 @@
     </script>
 
     
-
-
-    <div class="x">
-            <a href="{{ url_for('allblocks')}}" target="_blank">Show all blocks |</a>
-            <a href="{{ url_for('api')}}" target="_blank">Rest api documantation</a>
-        </div>
-
     
 </body>
 </html>

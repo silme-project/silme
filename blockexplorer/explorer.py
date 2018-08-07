@@ -27,6 +27,8 @@ def index():
     return render_template('index.html', object_list=lastblocks[::-1])
 
 
+
+
 @app.route('/api')
 def api():
     # api
@@ -50,13 +52,23 @@ def detail(row_id):
     object_list = getblocksfront()
     for row in object_list:
         if row['height'] == int(row_id):
-            return render_template("data_block.html", object=singleblockall(int(row_id)))
+            block = singleblockall(int(row_id))
+            txs = blocktxs(int(row_id))
+            return render_template("data_block.html", object=block, txs=txs)
     abort(404)
+
+
+@app.route('/data/tx/<row_id>/')
+def detail_tx(row_id):
+    tx = singletx(row_id)
+    return render_template("data_tx.html", txs=tx)
+
+
 
 
 @app.route('/search/')
 def search():
-    data = request.args['info']
+    data = request.args['data']
 
     # check if is blockhash
     if len(data) == 64 and CBlockchain().haveHash(data):
@@ -64,9 +76,18 @@ def search():
 
     # check if tx
     elif len(data) == 64:
-        tx = getTransaction(data)
-        if tx and tx != "null":
-            return tx
+        try:
+            version = CTx(data).Version()
+        except Exception as e:
+            return abort(404)
+        else:
+            tx = singletx(data)
+            return render_template("data_tx.html", txs=tx)
+
+    # check if block height
+    elif int(data) <= CBlockchain().getBestHeight():
+        return render_template('data_block.html', object = singleblockall(int(data)))
+
 
     # check if key 
 
