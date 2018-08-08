@@ -257,10 +257,16 @@ class Proccess(object):
 
         # get the sender pubkey of the input hash 
         thisPrev = CTx(tx["prev_out"]).GetRecipten()
-
+        
         if CBlockchain().GetBalance(thisPrev) < tx["value"]:
             logg("Proccess::thisTxIsVaild() : %s not enough coins to spend" %hashlib.sha256(hashlib.sha256(str(tx)).digest()).digest().encode("hex_codec"))
             return False  
+        
+        # coinbases transactions can't be spend until 7 blocks after they were created
+        # if any block contains transaction wich not pass the coinbase maturity reject this block 
+        if not CTx(tx["prev_out"]).IsReadyToSpend():
+            logg("Proccess::thisTxIsVaild() : %s Coinbase maturity expected" %hashlib.sha256(hashlib.sha256(str(tx)).digest()).digest().encode("hex_codec"))
+            return False
 
 
         return True
